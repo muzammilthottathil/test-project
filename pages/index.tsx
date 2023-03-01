@@ -1,8 +1,10 @@
 import axios from "axios";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import AddPost from "../components/AddPost";
+import PostCard from "../components/PostCard";
 import { API_LIMIT, API_URL } from "../constants/api";
 import { addPosts, decrementStart, incrementStart, selectPosts, selectStart } from "../redux/slices/postSlice";
 
@@ -10,6 +12,8 @@ const Home: NextPage = () => {
     const posts = useSelector(selectPosts);
     const start = useSelector(selectStart);
     const dispatch = useDispatch();
+
+    const [showAddPost, setShowAddPost] = useState<boolean>(false);
 
     const fetchPosts = async () => {
         try {
@@ -29,7 +33,7 @@ const Home: NextPage = () => {
         fetchPosts();
     }, [start]);
 
-    console.log(posts);
+    // console.log(posts);
 
     return (
         <div className="bg-[#EAE6E5] min-h-screen w-full font-serif p-4">
@@ -39,16 +43,19 @@ const Home: NextPage = () => {
             </Head>
 
             <main>
-                <h1 className="text-2xl font-bold text-center">Posts</h1>
+                <div className="flex items-center justify-between gap-4">
+                    <div />
+                    <h1 className="text-2xl font-bold text-center">Posts</h1>
+                    <button onClick={() => setShowAddPost((prev) => !prev)} className="bg-black text-white px-3 py-2 rounded-sm text-sm">
+                        + Add Post
+                    </button>
+                </div>
 
                 <hr className="border-t border-t-gray-300 mt-3 mb-4" />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
                     {posts?.map((post) => (
-                        <div key={post.id} className="bg-white p-4 shadow-md">
-                            <h2 className="text-lg font-semibold text-[#242424] mb-3">{post.title}</h2>
-                            <p className="text-gray-500 font-light">{post.body}</p>
-                        </div>
+                        <PostCard key={post.id} id={post.id} title={post.title} body={post.body} />
                     ))}
                 </div>
 
@@ -69,6 +76,8 @@ const Home: NextPage = () => {
                         {"Next >>"}
                     </button>
                 </div>
+
+                <AddPost setShow={setShowAddPost} show={showAddPost} reload={() => fetchPosts()} />
             </main>
 
             {/* REQUIREMENTS */}
