@@ -44,6 +44,7 @@ function AddPost({ show, setShow, reload, prefillData, setPrefillData }: AddPost
                     title,
                     body,
                 });
+                alert("Post updated successfully");
                 closeModal();
                 reload();
             } catch (error) {
@@ -55,6 +56,7 @@ function AddPost({ show, setShow, reload, prefillData, setPrefillData }: AddPost
                     title,
                     body,
                 });
+                alert("Post added successfully");
                 closeModal();
                 reload();
             } catch (error) {

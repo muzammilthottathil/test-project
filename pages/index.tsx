@@ -41,8 +41,6 @@ const Home: NextPage = () => {
         fetchPosts();
     }, [start]);
 
-    // console.log(posts);
-
     return (
         <div className="bg-[#EAE6E5] min-h-screen w-full font-serif p-4">
             <Head>
@@ -78,6 +76,7 @@ const Home: NextPage = () => {
                                 setSelectedPost(post);
                                 setShowAddPost(true);
                             }}
+                            reload={() => fetchPosts()}
                         />
                     ))}
                 </div>
@@ -102,18 +101,6 @@ const Home: NextPage = () => {
 
                 <AddPost setShow={setShowAddPost} show={showAddPost} reload={() => fetchPosts()} setPrefillData={setSelectedPost} prefillData={selectedPost} />
             </main>
-
-            {/* REQUIREMENTS */}
-            {/* 
-
-                Listing all resources ( 'https://jsonplaceholder.typicode.com/posts?_start=0&_limit=5' )  with pagination.
-
-                Creating a resource ( 'https://jsonplaceholder.typicode.com/posts' ) ( 'POST' )
-
-                Updating a resource ( 'https://jsonplaceholder.typicode.com/posts/{postId}' )
-
-                Deleting a resource ( 'https://jsonplaceholder.typicode.com/posts/1' ))
-         */}
         </div>
     );
 };
