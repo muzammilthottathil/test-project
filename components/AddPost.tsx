@@ -1,14 +1,23 @@
 import axios from "axios";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { API_URL } from "../constants/api";
+
+type Post = {
+    id: number;
+    title: string;
+    body: string;
+    userId: number;
+};
 
 type AddPostProps = {
     show: boolean;
     setShow: (show: boolean) => void;
     reload: () => void;
+    prefillData?: Post | null;
+    setPrefillData: (prefillData: any) => void;
 };
 
-function AddPost({ show, setShow, reload }: AddPostProps) {
+function AddPost({ show, setShow, reload, prefillData, setPrefillData }: AddPostProps) {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const [loading, setLoading] = useState(false);
@@ -17,27 +26,51 @@ function AddPost({ show, setShow, reload }: AddPostProps) {
         setShow(false);
         setTitle("");
         setBody("");
+        setPrefillData(null);
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!!prefillData && !prefillData?.id) {
+            alert("No post id found");
+            return;
+        }
+
         setLoading(true);
 
-        try {
-            const res = await axios.post(API_URL, {
-                title,
-                body,
-            });
-            closeModal();
-            reload();
-
-            console.log(res.data);
-        } catch (error) {
-            console.log(error);
+        if (!!prefillData) {
+            try {
+                const res = await axios.put(`${API_URL}/${prefillData.id}`, {
+                    title,
+                    body,
+                });
+                closeModal();
+                reload();
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            try {
+                const res = await axios.post(API_URL, {
+                    title,
+                    body,
+                });
+                closeModal();
+                reload();
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         setLoading(false);
     };
+
+    useEffect(() => {
+        if (!!prefillData && show) {
+            setTitle(prefillData.title ?? "");
+            setBody(prefillData.body ?? "");
+        }
+    }, [prefillData, show]);
 
     return (
         <div
@@ -55,8 +88,8 @@ function AddPost({ show, setShow, reload }: AddPostProps) {
                     </button>
                 </div>
                 <div className="h-4/5 w-full p-4">
-                    <h1 className="text-2xl font-bold text-[#242424] mb-3">Add Post</h1>
-                    <form onSubmit={(e) => handleSubmit} className="flex flex-col gap-4">
+                    <h1 className="text-2xl font-bold text-[#242424] mb-3">{!!prefillData ? "Update Post" : "Add Post"}</h1>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <input
                             type="text"
                             placeholder="Title"
@@ -74,7 +107,7 @@ function AddPost({ show, setShow, reload }: AddPostProps) {
                             onChange={(e) => setBody(e.target.value)}
                         />
                         <button disabled={loading || !title || !body} type="submit" className="bg-[#242424] text-white rounded-md p-2 disabled:bg-opacity-50">
-                            {loading ? "Adding..." : "Add Post"}
+                            {!!prefillData ? (loading ? "Updating..." : "Update Post") : loading ? "Adding..." : "Add Post"}
                         </button>
                     </form>
                 </div>

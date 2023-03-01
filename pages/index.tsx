@@ -8,12 +8,20 @@ import PostCard from "../components/PostCard";
 import { API_LIMIT, API_URL } from "../constants/api";
 import { addPosts, decrementStart, incrementStart, selectPosts, selectStart } from "../redux/slices/postSlice";
 
+type Post = {
+    id: number;
+    title: string;
+    body: string;
+    userId: number;
+};
+
 const Home: NextPage = () => {
     const posts = useSelector(selectPosts);
     const start = useSelector(selectStart);
     const dispatch = useDispatch();
 
     const [showAddPost, setShowAddPost] = useState<boolean>(false);
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
     const fetchPosts = async () => {
         try {
@@ -46,7 +54,13 @@ const Home: NextPage = () => {
                 <div className="flex items-center justify-between gap-4">
                     <div />
                     <h1 className="text-2xl font-bold text-center">Posts</h1>
-                    <button onClick={() => setShowAddPost((prev) => !prev)} className="bg-black text-white px-3 py-2 rounded-sm text-sm">
+                    <button
+                        onClick={() => {
+                            setSelectedPost(null);
+                            setShowAddPost(true);
+                        }}
+                        className="bg-black text-white px-3 py-2 rounded-sm text-sm"
+                    >
                         + Add Post
                     </button>
                 </div>
@@ -55,7 +69,16 @@ const Home: NextPage = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
                     {posts?.map((post) => (
-                        <PostCard key={post.id} id={post.id} title={post.title} body={post.body} />
+                        <PostCard
+                            key={post.id}
+                            id={post.id}
+                            title={post.title}
+                            body={post.body}
+                            onEdit={() => {
+                                setSelectedPost(post);
+                                setShowAddPost(true);
+                            }}
+                        />
                     ))}
                 </div>
 
@@ -77,7 +100,7 @@ const Home: NextPage = () => {
                     </button>
                 </div>
 
-                <AddPost setShow={setShowAddPost} show={showAddPost} reload={() => fetchPosts()} />
+                <AddPost setShow={setShowAddPost} show={showAddPost} reload={() => fetchPosts()} setPrefillData={setSelectedPost} prefillData={selectedPost} />
             </main>
 
             {/* REQUIREMENTS */}
