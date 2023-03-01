@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { API_LIMIT } from "../../constants/api";
 import { RootState } from "../store";
 
 interface Post {
@@ -28,11 +29,11 @@ export const postSlice = createSlice({
             state.posts = action.payload;
         },
 
-        incrementStart: (state, action: PayloadAction<number>) => {
-            state.start += action.payload;
+        incrementStart: (state) => {
+            state.start += API_LIMIT;
         },
-        decrementStart: (state, action: PayloadAction<number>) => {
-            state.start = state.start - action.payload <= 0 ? 0 : state.start - action.payload;
+        decrementStart: (state) => {
+            state.start = state.start - API_LIMIT <= 0 ? 0 : state.start - API_LIMIT;
         },
     },
 });
